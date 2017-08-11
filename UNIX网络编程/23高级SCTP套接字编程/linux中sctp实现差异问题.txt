@@ -1,0 +1,37 @@
+stcp协议在linux中的实现和unp书上得稍有不同：
+1、关于通知,linux中有一个SCTP通知没有定义:SCTP_ADAPTION_INDICATION(适配层错误)，这个事件在linux内核中并没有提供
+2、sctp_address_to_associd这个函数在linux中无法根据对端地址获得sctp关联，
+   原因为Linux的实现中,会把函数sctp_opt_info的第二个参数"sctp_assoc_t id"的值(这个值为可能存在的sctp关联标识),直接填入struct sctp_paddrparams这个结构体的成员sctp_assoc_t app_assoc_id中，而不是根据你所期望的：根据你所填入对端地址，返回关联标识。
+3、Linux没有提供sctp无序发送的支持，头文件中没有定义标志"MSG_UNORDERED"
+4、在Linux中,监听套接字(调用listen所在的位置)所在的函数栈，与sctp_recvmsg所在的函数栈不能相隔层次过多，否则，sctp_recvmsg会直接返回"资源暂时不可用"
+   例如：在centos6.x中：
+   main
+   {
+   		Listen(...)
+   		{
+   			listen(...) //在此处调用listen
+   		}
+   		Sctp_recvmsg(...)
+   		{
+   			sctp_recvmsg(...) //在此处调用sctp_recvmsg
+   		}
+   }
+   //此种情况在centos6.x中，sctp_recvmsg会直接返回"资源暂时不可用"
+
+   例如：在ubuntu12.04中(相隔的层次会比centos6.x多一层)
+   main
+   {
+   		Listen(...)
+   		{
+   			listen(...) //在此处调用listen
+   		}
+   		SCTP_recvmsg(...)
+   		{
+   			Sctp_recvmsg(...)
+   			{
+   				sctp_recvmsg //在此处调用sctp_recvmsg
+   			}
+   		}
+   }
+   //此种情况在ubuntu12.04中，sctp_recvmsg会直接返回"资源暂时不可用"(centos中的情况，在ubuntu中运行正常)
+   //也就是说ubuntu12.04，能比centos6.x中多兼容一层。
