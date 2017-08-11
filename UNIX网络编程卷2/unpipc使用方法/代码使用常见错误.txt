@@ -1,0 +1,74 @@
+1、按照Readme操作，进入lib目录下make报错：
+gcc -g -O2 -D_REENTRANT -Wall -D_POSIX_PTHREAD_SEMANTICS   -c -o daemon_inetd.o daemon_inetd.c
+In file included from /usr/include/netinet/in.h:24,
+                 from /usr/include/rpc/types.h:90,
+                 from /usr/include/rpc/rpc.h:38,
+                 from unpipc.h:115,
+                 from daemon_inetd.c:1:
+/usr/include/stdint.h:49: error: duplicate ‘unsigned’
+/usr/include/stdint.h:49: error: two or more data types in declaration specifiers
+/usr/include/stdint.h:50: error: duplicate ‘unsigned’
+/usr/include/stdint.h:50: error: duplicate ‘short’
+/usr/include/stdint.h:52: error: duplicate ‘unsigned’
+/usr/include/stdint.h:52: error: two or more data types in declaration specifiers
+make: *** [daemon_inetd.o] 错误 1
+ 
+修改config.h 注释掉一下三行：
+ 
+//#define uint8_t unsigned char               /* <sys/types.h> */
+//#define uint16_t unsigned short             /* <sys/types.h> */
+//#define uint32_t unsigned int               /* <sys/types.h> */
+
+2、链接报错：将生成的libunpipc.a链接到我们的c程序时报错。
+./libunpipc.a(wrapunix.o): In function `Mktemp':
+/home/vonnyfly/Document/unix_src/unpv22e/lib/wrapunix.c:184: warning: the use of `mktemp' is dangerous, better use `mkstemp' or `mkdtemp'
+/tmp/ccKNDn2N.o: In function `main':
+mqcreate1.c:(.text+0x3a): undefined reference to `GetOpt'
+./libunpipc.a(wrapunix.o): In function `Shm_unlink':
+wrapunix.c:(.text+0x54d): undefined reference to `shm_unlink'
+./libunpipc.a(wrapunix.o): In function `Shm_open':
+wrapunix.c:(.text+0x58c): undefined reference to `shm_open'
+./libunpipc.a(wrapunix.o): In function `Sem_getvalue':
+wrapunix.c:(.text+0x6d4): undefined reference to `sem_getvalue'
+./libunpipc.a(wrapunix.o): In function `Sem_post':
+wrapunix.c:(.text+0x6fd): undefined reference to `sem_post'
+./libunpipc.a(wrapunix.o): In function `Sem_trywait':
+wrapunix.c:(.text+0x72e): undefined reference to `sem_trywait'
+./libunpipc.a(wrapunix.o): In function `Sem_wait':
+wrapunix.c:(.text+0x77d): undefined reference to `sem_wait'
+./libunpipc.a(wrapunix.o): In function `Sem_destroy':
+wrapunix.c:(.text+0x7ad): undefined reference to `sem_destroy'
+./libunpipc.a(wrapunix.o): In function `Sem_init':
+wrapunix.c:(.text+0x7eb): undefined reference to `sem_init'
+./libunpipc.a(wrapunix.o): In function `Sem_unlink':
+wrapunix.c:(.text+0x81d): undefined reference to `sem_unlink'
+./libunpipc.a(wrapunix.o): In function `Sem_close':
+wrapunix.c:(.text+0x84d): undefined reference to `sem_close'
+./libunpipc.a(wrapunix.o): In function `Sem_open':
+wrapunix.c:(.text+0x897): undefined reference to `sem_open'
+wrapunix.c:(.text+0x8b0): undefined reference to `sem_open'
+./libunpipc.a(wrapunix.o): In function `Mq_setattr':
+wrapunix.c:(.text+0xbeb): undefined reference to `mq_setattr'
+./libunpipc.a(wrapunix.o): In function `Mq_getattr':
+wrapunix.c:(.text+0xc24): undefined reference to `mq_getattr'
+./libunpipc.a(wrapunix.o): In function `Mq_notify':
+wrapunix.c:(.text+0xc54): undefined reference to `mq_notify'
+./libunpipc.a(wrapunix.o): In function `Mq_receive':
+wrapunix.c:(.text+0xc92): undefined reference to `mq_receive'
+./libunpipc.a(wrapunix.o): In function `Mq_send':
+wrapunix.c:(.text+0xce2): undefined reference to `mq_send'
+./libunpipc.a(wrapunix.o): In function `Mq_unlink':
+wrapunix.c:(.text+0xd0d): undefined reference to `mq_unlink'
+./libunpipc.a(wrapunix.o): In function `Mq_close':
+wrapunix.c:(.text+0xd3d): undefined reference to `mq_close'
+./libunpipc.a(wrapunix.o): In function `Mq_open':
+wrapunix.c:(.text+0xd79): undefined reference to `__mq_open_2'
+wrapunix.c:(.text+0xd9e): undefined reference to `mq_open'
+collect2: ld returned 1 exit status
+解决办法：gcc 添加-lrt命令选项（具体查看man mq_open)
+
+3、找不到GetOpt：
+/tmp/ccv1UEy3.o: In function `main':
+mqcreate1.c:(.text+0x3a): undefined reference to `GetOpt'
+collect2: ld returned 1 exit status
+直接把程序改了getopt，没关系。
