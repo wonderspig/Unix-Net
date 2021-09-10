@@ -10,16 +10,16 @@ main(int argc, char **argv)
 	if (argc != 2) //如果参数不等于1,则出错
 		err_quit("usage: a.out <IPaddress>");
 
-	if ( (sockfd = socket(AF_INET6, SOCK_STREAM, 0)) < 0) //创建IPv6的，有链接的套接字
+	if ( (sockfd = socket(AF_INET6, SOCK_STREAM, 0)) < 0) //创建IPv6的套接字
 		err_sys("socket error");
 
 	bzero(&servaddr, sizeof(servaddr)); //清空servaddr这块内存
 	servaddr.sin6_family = AF_INET6; //地址族定义为IPv6
-	servaddr.sin6_port   = htons(13);	/* daytime server 端口号转换成网络字节续后填入servaddr结构 */
+	servaddr.sin6_port   = htons(13);	/* daytime server 端口号转换成网络字节序后填入servaddr结构 */
 	//把参数的字符串形式地址转换成二进制格式并填入servaddr
 	if (inet_pton(AF_INET6, argv[1], &servaddr.sin6_addr) <= 0) 
 		err_quit("inet_pton error for %s", argv[1]);
-	//用connect链接填写好的servaddr地址
+	//用connect建立于填写好的servaddr地址的连接
 	if (connect(sockfd, (SA *) &servaddr, sizeof(servaddr)) < 0)
 		err_sys("connect error");
 

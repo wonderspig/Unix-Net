@@ -16,19 +16,19 @@ main(int argc, char **argv)
 
 	bzero(&servaddr, sizeof(servaddr)); //清空servaddr的内存
 	servaddr.sin_family = AF_INET; //地址族设置为IPv4
-	servaddr.sin_port   = htons(13);	/* daytime server 把端口号转换成网络字节续并填入servaddr */
+	servaddr.sin_port   = htons(13);	/* daytime server 把端口号转换成网络字节序并填入servaddr */
 	if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) //把字符串格式的地址转换后填入servaddr
 		err_quit("inet_pton error for %s", argv[1]);
 
-	//地址填写完毕，链接这个地址
+	//地址填写完毕，建立与这个地址的连接
 	if (connect(sockfd, (SA *) &servaddr, sizeof(servaddr)) < 0) //把地址转换成通用套接字格式后,进行连接
 		err_sys("connect error");
 
 	//循环从套接字中读数据,直到返回0或者小于0的数
 	//返回0说明读完了,返回小于0的数说明出错
 	while ( (n = read(sockfd, recvline, MAXLINE)) > 0) { 
-		recvline[n] = 0;	/* null terminate 加上末尾的空字符串 */
-		if (fputs(recvline, stdout) == EOF) //把从套接字中读道德数据,压入标准输出
+		recvline[n] = 0;	/* null terminate 加上末尾的空字符 */
+		if (fputs(recvline, stdout) == EOF) //把从套接字中读到的数据,压入标准输出
 			err_sys("fputs error");
 	}
 	if (n < 0) //处理read出错的情况
