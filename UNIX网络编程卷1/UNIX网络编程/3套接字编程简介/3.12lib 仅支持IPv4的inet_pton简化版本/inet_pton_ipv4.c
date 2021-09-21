@@ -16,7 +16,7 @@ inet_pton(int family, const char *strptr, void *addrptr)
     if (family == AF_INET) { //如果为IPv4地址
     	struct in_addr  in_val; //定义ip地址的结构体
 
-        if (inet_aton(strptr, &in_val)) { //把字符串格式转换成二进制地址格式,存放在in_val中
+        if (inet_aton(strptr, &in_val)) { //把字符串格式转换成二进制地址格式,存放在in_val中 (IP地址点分十进制字符串 -> 网络字节序二进制值)
             memcpy(addrptr, &in_val, sizeof(struct in_addr)); //把转换好的地址复制到addrptr参数中
             return (1); //正确返回1
         }

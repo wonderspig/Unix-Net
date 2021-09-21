@@ -5,7 +5,7 @@ ssize_t						/* Write "n" bytes to a descriptor. */
 writen(int fd, const void *vptr, size_t n)
 {
 	size_t		nleft; //剩余要写的字节数
-	ssize_t		nwritten; //已经写的字节数
+	ssize_t		nwritten; //单次调用write()写入的字节数
 	const char	*ptr; //write的缓冲区
 
 	ptr = vptr; //把传参进来的write要写的缓冲区备份一份

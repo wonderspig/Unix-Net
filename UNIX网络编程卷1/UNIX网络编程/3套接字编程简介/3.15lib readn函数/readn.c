@@ -5,8 +5,8 @@ ssize_t						/* Read "n" bytes from a descriptor. */
 readn(int fd, void *vptr, size_t n)
 {
 	size_t	nleft; //剩余需要读的字节数
-	ssize_t	nread; //已经读的字节数
-	char	*ptr;  //读到的字节数存放的缓冲区
+	ssize_t	nread; //单次调用read()读到的字节数
+	char	*ptr;  //读到的字节数据存放的缓冲区
 
 	ptr = vptr;
 	nleft = n;
@@ -19,8 +19,8 @@ readn(int fd, void *vptr, size_t n)
 		} else if (nread == 0)
 			break;				/* EOF */
 
-		nleft -= nread; //剩余的字节数=现在剩余的字节数-已读的字节数
-		ptr   += nread; //下一次要写入的prt指针的位置要右移已经读到的字节数
+		nleft -= nread; //剩余的字节数=现在剩余的字节数-本次read()读到的字节数
+		ptr   += nread; //下一次要写入的ptr指针的位置要右移已经读到的字节数据
 	}
 
 	//已经读的字节数＝要求读的字节数-剩余的字节数
