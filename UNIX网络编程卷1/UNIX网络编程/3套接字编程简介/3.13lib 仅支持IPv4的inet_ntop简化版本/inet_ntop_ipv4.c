@@ -12,12 +12,12 @@
 const char *
 inet_ntop(int family, const void *addrptr, char *strptr, size_t len)
 {
-	const u_char *p = (const u_char *) addrptr; //把传参进来的二进制地址强转成u_char类型
+	const u_char *p = (const u_char *) addrptr; //把传参进来的二进制地址强转成u_char类型 (网络字节序二进制值 大端)
 
 	if (family == AF_INET) { //如果为ip4地址
 		char	temp[INET_ADDRSTRLEN]; //定义一个足够存放ip地址大小的数组
 
-		//把传参进来的已经转换成u_char的二进制地址分解成x.x.x.x的形式并存放入temp这个数组中
+		//把传参进来的已经转换成u_char的二进制地址分解成x.x.x.x的形式并存放入temp这个数组中 (网络字节序二进制值 大端)
 		snprintf(temp, sizeof(temp), "%d.%d.%d.%d",
 				 p[0], p[1], p[2], p[3]); 
 		if (strlen(temp) >= len) { //把temp这个数组的大小和传参进来的调用者用来存放的数组大小进行比较
